@@ -1,0 +1,12 @@
+{
+  "name": "Hotline",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/DooDesch-Mods/ScheduleOne-Hotline",
+  "description": "One overlay and one key for every mod's HUD - and it auto-catches mods that grab function keys.",
+  "dependencies": [
+    "LavaGang-MelonLoader-0.7.3"
+  ],
+  "contributors": [
+    "DooDesch"
+  ]
+}
