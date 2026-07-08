@@ -6,7 +6,7 @@
 > gets a clean, draggable panel - buttons, toggles, readouts, logs. Hotline even auto-catches mods that grab
 > function keys (F1-F12) and turns them into clickable buttons, so two mods stop fighting over the same key.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
@@ -15,7 +15,7 @@
 
 - **One overlay, one key.** Press **F6** for a single in-game overlay; every mod that registers gets its own
   toggleable, movable, resizable window. No more a different hotkey per mod.
-- **Ready-made panels.** A registering mod gets text readouts, action buttons, on/off toggles and a log
+- **Ready-made panels.** A registering mod gets text readouts, images (e.g. a QR code), action buttons, on/off toggles and a log
   channel for free - Hotline draws them.
 - **Auto-catch raw hotkeys.** Hotline detects mods that poll function keys (F1-F12) and adds each as a button
   in that mod's panel, attributed to the right mod automatically.

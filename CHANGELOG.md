@@ -3,6 +3,13 @@
 All notable changes to Hotline are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-07-08
+
+### Added
+- Panels can now show an **image** (`Panel.Image`) alongside their text, actions and toggles - a mod supplies
+  raw pixels and the overlay draws them crisply. Additive and backward-compatible: older mods are unaffected,
+  and a mod that uses it is a no-op on an older Hotline. First user: Snitch's in-game connect-a-phone QR.
+
 ## [1.0.0] - 2026-06-26
 
 Initial release.

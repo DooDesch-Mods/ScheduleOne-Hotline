@@ -5,7 +5,7 @@ using Hotline.Config;
 using Hotline.Hotkeys;
 using Hotline.Logging;
 
-[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.0.0", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
+[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.1.0", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 [assembly: MelonOptionalDependencies("ModManager&PhoneApp")]
 
@@ -41,7 +41,7 @@ namespace Hotline
             try { HarmonyInstance.PatchAll(); }
             catch (Exception e) { Log.Warning("[Hotline] Harmony patch failed: " + e.Message); }
 
-            Log.Msg("Hotline v1.0.0 - mod HUD & hotkey hub. Press " + Preferences.MasterKey + " in-world to open the overlay ('hotline help' for commands).");
+            Log.Msg("Hotline v1.1.0 - mod HUD & hotkey hub. Press " + Preferences.MasterKey + " in-world to open the overlay ('hotline help' for commands).");
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)

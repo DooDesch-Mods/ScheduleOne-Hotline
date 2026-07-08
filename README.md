@@ -8,7 +8,7 @@
 > mods can stop fighting over the same key. A framework other mods plug into - and a compatibility layer that
 > works even for mods that never heard of it.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
@@ -18,8 +18,8 @@
 
 - **One overlay, one key.** Press **F6** to open a single in-game overlay. Every mod that registers gets its
   own toggleable, movable, resizable window - no more remembering a different hotkey per mod.
-- **Ready-made panels.** A registering mod gets text readouts, action buttons, on/off toggles and a log
-  channel for free, drawn by Hotline - it never has to build its own UI.
+- **Ready-made panels.** A registering mod gets text readouts, images (e.g. a QR code), action buttons, on/off
+  toggles and a log channel for free, drawn by Hotline - it never has to build its own UI.
 - **Auto-catch raw hotkeys.** Hotline detects mods that poll function keys (F1-F12) and adds each as a
   clickable button in that mod's panel, attributing it to the right mod automatically. Trigger any mod's
   hotkey from one place.
