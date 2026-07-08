@@ -19,5 +19,6 @@ namespace Hotline.Bridge
         public static Action<string> BindPanelLog;                                             // panelId -> show its log channel in the panel
         public static Action<string, int, string> Log;                                         // channel, level(0=info,1=warn,2=error), message
         public static Action<string, string, int, Action> RegisterHotkey;                      // ownerId, label, keyCode(UnityEngine.KeyCode int), run
+        public static Action<string, Func<int[]>> RegisterImage;                               // panelId, provider -> {w, h, argb...} or null
     }
 }

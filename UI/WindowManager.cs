@@ -66,6 +66,11 @@ namespace Hotline.UI
         private static readonly Dictionary<string, string> _textCache = new Dictionary<string, string>();
         private static float _nextText;
 
+        // image cache: a mod's image provider returns raw ARGB pixels; we build a Point-filtered texture and only
+        // rebuild it when the content hash changes (keyed "panelId:index").
+        private static readonly Dictionary<string, Texture2D> _imgTex = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<string, int> _imgHash = new Dictionary<string, int>();
+
         // drag state
         private enum Drag { None, Move, Resize }
         private static Drag _drag = Drag.None;
@@ -198,8 +203,20 @@ namespace Hotline.UI
                     bool on = PanelRegistry.GetToggle(p.Toggles[i].Id);
                     Button(id, innerW, scroll, bodyRect, ref localY, (on ? "[x] " : "[ ] ") + p.Toggles[i].Label, 2, p.Toggles[i].Id, on);
                 }
+                for (int i = 0; i < p.Images.Count; i++) Image(id + ":" + i, innerW, scroll, bodyRect, ref localY);
                 if (p.HasLog) Label(innerW, scroll, bodyRect, ref localY, Text("log:" + id));
             }
+        }
+
+        private static void Image(string key, float innerW, float scroll, Rect bodyRect, ref float localY)
+        {
+            if (!_imgTex.TryGetValue(key, out Texture2D tex) || tex == null) return;
+            float side = Mathf.Min(innerW, Mathf.Max(tex.width, 160));   // near 1:1 for a pre-scaled image; stays crisp
+            side = Mathf.Min(side, innerW);
+            float drawY = localY - scroll;
+            if (drawY + side > 0f && drawY < bodyRect.height)
+                GUI.DrawTexture(new Rect(Pad, drawY, side, side), tex, ScaleMode.ScaleToFit, true);
+            localY += side + Gap;
         }
 
         private static void Label(float innerW, float scroll, Rect bodyRect, ref float localY, string text)
@@ -325,8 +342,54 @@ namespace Hotline.UI
                 PanelModel p = panels[i];
                 _textCache["panel:" + p.Id] = BuildPanelText(p);
                 if (p.HasLog) _textCache["log:" + p.Id] = BuildLogText(p.Id, 16);
+                for (int k = 0; k < p.Images.Count; k++) RefreshImage(p.Id + ":" + k, p.Images[k]);
             }
             _textCache["timeline"] = BuildTimelineText(220);
+        }
+
+        /// <summary>Poll an image provider and (re)build its texture only when the pixel data changed.</summary>
+        private static void RefreshImage(string key, System.Func<int[]> provider)
+        {
+            int[] d = null;
+            try { d = provider?.Invoke(); } catch { }
+            int hash = ImgHash(d);
+            if (_imgHash.TryGetValue(key, out int prev) && prev == hash && _imgTex.ContainsKey(key)) return;
+            _imgHash[key] = hash;
+            if (_imgTex.TryGetValue(key, out Texture2D old) && old != null) UnityEngine.Object.Destroy(old);
+            _imgTex[key] = BuildImageTexture(d);
+        }
+
+        private static int ImgHash(int[] d)
+        {
+            if (d == null) return 0;
+            int h = d.Length;
+            int step = Mathf.Max(1, d.Length / 64);   // sample up to ~64 points - cheap change detection
+            for (int i = 0; i < d.Length; i += step) h = h * 31 + d[i];
+            return h;
+        }
+
+        private static Texture2D BuildImageTexture(int[] d)
+        {
+            if (d == null || d.Length < 2) return null;
+            int w = d[0], h = d[1];
+            if (w <= 0 || h <= 0 || d.Length < 2 + w * h) return null;
+            var px = new Color32[w * h];
+            for (int r = 0; r < h; r++)
+                for (int c = 0; c < w; c++)
+                {
+                    int argb = d[2 + r * w + c];
+                    // Data is top-down row-major; texture memory is bottom-up, so flip vertically for an upright draw.
+                    px[(h - 1 - r) * w + c] = new Color32((byte)(argb >> 16), (byte)(argb >> 8), (byte)argb, (byte)(argb >> 24));
+                }
+            var tex = new Texture2D(w, h, TextureFormat.ARGB32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            tex.SetPixels32(px);
+            tex.Apply();
+            return tex;
         }
 
         private static string Text(string key) => _textCache.TryGetValue(key, out string v) ? v : "";

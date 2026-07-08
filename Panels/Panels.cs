@@ -32,6 +32,9 @@ namespace Hotline.Panels
         public readonly List<Func<string>> Texts = new List<Func<string>>(2);
         public readonly List<ActionItem> Actions = new List<ActionItem>(4);
         public readonly List<ToggleItem> Toggles = new List<ToggleItem>(4);
+        // Image providers return {width, height, argb0, argb1, ...} (ARGB32 per pixel) or null/empty for "nothing
+        // to show". Kept as a raw int[] so the shim boundary stays Unity-free; the window manager builds the texture.
+        public readonly List<Func<int[]>> Images = new List<Func<int[]>>(1);
     }
 
     /// <summary>
@@ -99,6 +102,12 @@ namespace Hotline.Panels
             p.Toggles.RemoveAll(t => t.Id == toggleId);
             p.Toggles.Add(item);
             _toggles[toggleId] = item;
+        }
+
+        internal static void RegisterImage(string panelId, Func<int[]> provider)
+        {
+            if (provider == null) return;
+            GetOrCreate(panelId, null).Images.Add(provider);
         }
 
         internal static void BindPanelLog(string panelId) => GetOrCreate(panelId, null).HasLog = true;
