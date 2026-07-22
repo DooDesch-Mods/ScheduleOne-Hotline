@@ -1,6 +1,6 @@
 # Hotline - One Overlay and One Key for Every Mod's HUD
 
-> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de](https://support.doodesch.de).
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
 > Every mod invents its own hotkey and its own debug window. Hotline ends that: one master key (F6) opens a
 > single in-game overlay where every mod gets a clean, draggable panel - buttons, toggles, readouts, logs.
