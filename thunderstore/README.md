@@ -1,6 +1,6 @@
 # Hotline - One Hotkey for Every Mod's HUD
 
-> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de](https://support.doodesch.de).
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
 > **One overlay and one key for every mod's HUD.** Press F6 to open a single in-game overlay where every mod
 > gets a clean, draggable panel - buttons, toggles, readouts, logs. Hotline even auto-catches mods that grab
