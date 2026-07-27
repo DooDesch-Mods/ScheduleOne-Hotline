@@ -27,7 +27,6 @@
 ## Requirements
 
 - **Schedule I** (IL2CPP) with **MelonLoader 0.7.3+**.
-- Optional: **Mod Manager & Phone App** for the in-game settings UI.
 
 Hotline has no other hard dependency - it does not use S1API.
 
@@ -39,7 +38,7 @@ to open its window; drag by the title bar, resize from the corner. `hotline help
 ## Settings
 
 `Enabled`, `MasterHotkey` (F6), `InterceptFunctionKeys` (on), `SuppressRawFunctionKeys` (off, full takeover),
-`HudFontSize` (12). Editable in the Mod Manager & Phone App UI or `UserData/MelonPreferences.cfg` under
+`HudFontSize` (12). Editable in `UserData/MelonPreferences.cfg` under
 `Hotline_01_Main`.
 
 ## License

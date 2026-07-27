@@ -38,7 +38,6 @@
 |-----------|------------------|
 | Schedule I | IL2CPP (current Steam public build) |
 | MelonLoader | `0.7.3+` |
-| Mod Manager & Phone App | [Prowiler, Nexus mods/397](https://www.nexusmods.com/schedule1/mods/397) - optional, for the in-game settings UI |
 
 Hotline has no other hard dependency - it does not use S1API. Any mod can plug into it, but mods work fine
 without it too.
@@ -54,7 +53,6 @@ automatically.
 
 1. Install **MelonLoader 0.7.3** for Schedule I.
 2. Drop **`Hotline.dll`** into your Schedule I `Mods/` folder.
-3. (Optional) Install **Mod Manager & Phone App** for the in-game settings UI.
 
 ## Usage
 
@@ -68,7 +66,7 @@ instead of the mod, ending key collisions entirely.
 
 ## Configuration
 
-Settings live in the **Mod Manager & Phone App** UI in-game, or in `UserData/MelonPreferences.cfg` under
+Settings live in `UserData/MelonPreferences.cfg` under
 `Hotline_01_Main`. Changes apply live.
 
 | Setting | Default | What it does |
@@ -115,7 +113,6 @@ you can ship it with no hard dependency.
 ## Credits
 
 - **DooDesch** - mod author.
-- **Prowiler** - Mod Manager & Phone App (in-game settings UI).
 
 ## License
 
