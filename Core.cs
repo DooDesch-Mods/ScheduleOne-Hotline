@@ -7,7 +7,6 @@ using Hotline.Logging;
 
 [assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.1.0", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
 [assembly: MelonGame("TVGS", "Schedule I")]
-[assembly: MelonOptionalDependencies("ModManager&PhoneApp")]
 
 namespace Hotline
 {
