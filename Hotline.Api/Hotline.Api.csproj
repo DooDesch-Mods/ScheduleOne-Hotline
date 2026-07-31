@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Hotline.Api - the modder-facing no-op shim for the Hotline HUD & hotkey framework.
+    A tiny, self-contained netstandard2.0 assembly with ZERO references (no MelonLoader, IL2CPP or Unity). A
+    modder either references this DLL or drops the single Hotline.cs file into their own project. It locates the
+    running Hotline host by reflection (Hotline.Bridge.HotlineBridge) and binds standard BCL delegates - so it
+    shares NO type with the host and is a true zero-overhead no-op when Hotline is not installed. Lights up
+    automatically when it is. Usage: Hotline.Api.Hud.RegisterPanel("MyMod", "My Mod").Action("Reload", Reload);
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Hotline.Api</RootNamespace>
+    <AssemblyName>Hotline.Api</AssemblyName>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+</Project>
