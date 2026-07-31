@@ -23,6 +23,8 @@ namespace Hotline.UI
         private const float Gap = 4f;
         private const float MinW = 160f;
         private const float MinH = 70f;
+        private const float SliderH = 14f;   // track height; the knob overhangs it by 2 px top and bottom
+        private const float KnobW = 10f;
         private static float _btnH = 22f;   // recomputed per-frame from the font size so descenders never clip
 
         // styles + background textures (built once)
@@ -59,8 +61,13 @@ namespace Hotline.UI
         private static readonly Dictionary<string, Rect> _bodyRects = new Dictionary<string, Rect>();
         private static readonly Dictionary<string, float> _contentH = new Dictionary<string, float>();
 
-        private struct Hit { public string Win; public Rect Rect; public int Type; public string Arg; } // 1=action 2=toggle 3=window-toggle
+        private struct Hit { public string Win; public Rect Rect; public int Type; public string Arg; } // 1=action 2=toggle 3=window-toggle 4=slider
         private static readonly List<Hit> _hits = new List<Hit>(32);
+
+        // The slider currently being dragged. Held across frames so the knob keeps following the cursor even when it
+        // leaves the track - which is what every slider anywhere does, and its absence feels broken immediately.
+        private static string _sliderId;
+        private static Rect _sliderTrack;
 
         // text cache (rebuilt ~10 Hz)
         private static readonly Dictionary<string, string> _textCache = new Dictionary<string, string>();
@@ -203,9 +210,76 @@ namespace Hotline.UI
                     bool on = PanelRegistry.GetToggle(p.Toggles[i].Id);
                     Button(id, innerW, scroll, bodyRect, ref localY, (on ? "[x] " : "[ ] ") + p.Toggles[i].Label, 2, p.Toggles[i].Id, on);
                 }
+                for (int i = 0; i < p.Sliders.Count; i++) Slider(id, innerW, scroll, bodyRect, ref localY, p.Sliders[i]);
                 for (int i = 0; i < p.Images.Count; i++) Image(id + ":" + i, innerW, scroll, bodyRect, ref localY);
                 if (p.HasLog) Label(innerW, scroll, bodyRect, ref localY, Text("log:" + id));
             }
+        }
+
+        /// <summary>
+        /// A label-plus-track slider: the caption carries the name and the live value, the bar below it is the thing
+        /// you grab. Drawn with the same tinted 1x1 texture everything else uses, so it needs no new assets.
+        ///
+        /// The track rect is recorded as a hit so <see cref="HandleInput"/> can start a drag on it; the value is only
+        /// ever written through <see cref="PanelRegistry.SetSlider"/>, which clamps and snaps - the drawing code never
+        /// decides what a legal value is.
+        /// </summary>
+        private static void Slider(string id, float innerW, float scroll, Rect bodyRect, ref float localY, SliderItem s)
+        {
+            if (s == null) return;
+
+            double val = PanelRegistry.GetSliderValue(s.Id);
+            string caption = s.Label + "  <b>" + Format(val, s.Step) + "</b>"
+                           + (string.IsNullOrEmpty(s.Unit) ? "" : " " + s.Unit);
+            Label(innerW, scroll, bodyRect, ref localY, caption);
+
+            float trackW = Mathf.Max(60f, innerW);
+            float drawY = localY - scroll;
+            if (drawY + SliderH > 0f && drawY < bodyRect.height)
+            {
+                var local = new Rect(Pad, drawY, trackW, SliderH);
+                var screen = new Rect(bodyRect.x + Pad, bodyRect.y + drawY, trackW, SliderH);
+                bool hover = _cursorFree && screen.Contains(_mouse);
+                bool dragging = _sliderId == s.Id;
+
+                // groove
+                GUI.backgroundColor = new Color(0.16f, 0.17f, 0.24f, 0.98f);
+                GUI.Box(local, GUIContent.none, _btn);
+
+                // filled portion up to the current value
+                float f = s.Fraction01();
+                if (f > 0f)
+                {
+                    GUI.backgroundColor = dragging || hover ? BtnOnHover : BtnOn;
+                    GUI.Box(new Rect(local.x, local.y, Mathf.Max(2f, local.width * f), local.height), GUIContent.none, _btn);
+                }
+
+                // knob
+                float kx = Mathf.Clamp(local.x + local.width * f - KnobW * 0.5f, local.x, local.xMax - KnobW);
+                GUI.backgroundColor = dragging || hover ? new Color(0.95f, 0.96f, 1f, 1f) : new Color(0.78f, 0.81f, 0.92f, 1f);
+                GUI.Box(new Rect(kx, local.y - 2f, KnobW, local.height + 4f), GUIContent.none, _btn);
+
+                GUI.backgroundColor = Color.white;
+                _hits.Add(new Hit { Win = id, Rect = screen, Type = 4, Arg = s.Id });
+            }
+            localY += SliderH + Gap;
+        }
+
+        /// <summary>Decimals that match the step, so a 0.005-step slider does not read "0" for every value.</summary>
+        private static string Format(double v, double step)
+        {
+            if (step >= 1d || step <= 0d) return v.ToString("0.##");
+            if (step >= 0.1d) return v.ToString("0.0");
+            if (step >= 0.01d) return v.ToString("0.00");
+            return v.ToString("0.000");
+        }
+
+        /// <summary>Value under a cursor x on a track, in the slider's own units.</summary>
+        private static double ValueAt(SliderItem s, Rect track, float mouseX)
+        {
+            if (s == null || track.width <= 0f) return 0d;
+            float f = Mathf.Clamp01((mouseX - track.x) / track.width);
+            return s.Min + (s.Max - s.Min) * f;
         }
 
         private static void Image(string key, float innerW, float scroll, Rect bodyRect, ref float localY)
@@ -258,7 +332,21 @@ namespace Hotline.UI
 
         internal static void HandleInput()
         {
-            if (Cursor.lockState == CursorLockMode.Locked) { _drag = Drag.None; return; }
+            if (Cursor.lockState == CursorLockMode.Locked) { _drag = Drag.None; _sliderId = null; return; }
+
+            // A slider drag outranks everything else while the button is down: the cursor is allowed to wander off
+            // the track, off the window, anywhere - the value keeps following its x. Released anywhere, it ends.
+            if (_sliderId != null)
+            {
+                var mm = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                if (Input.GetMouseButton(0))
+                {
+                    SliderItem s = PanelRegistry.GetSlider(_sliderId);
+                    if (s != null) PanelRegistry.SetSlider(_sliderId, ValueAt(s, _sliderTrack, mm.x));
+                    return;
+                }
+                _sliderId = null;
+            }
 
             var m = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
             float wheel = Input.mouseScrollDelta.y;
@@ -296,6 +384,18 @@ namespace Hotline.UI
                         case 1: PanelRegistry.Invoke(hit.Arg); break;
                         case 2: PanelRegistry.SetToggle(hit.Arg, !PanelRegistry.GetToggle(hit.Arg)); break;
                         case 3: WindowLayout.Toggle(hit.Arg); break;
+                        case 4:
+                        {
+                            // Jump to where it was clicked, then keep dragging from there.
+                            SliderItem s = PanelRegistry.GetSlider(hit.Arg);
+                            if (s != null)
+                            {
+                                _sliderId = hit.Arg;
+                                _sliderTrack = hit.Rect;
+                                PanelRegistry.SetSlider(hit.Arg, ValueAt(s, hit.Rect, m.x));
+                            }
+                            break;
+                        }
                     }
                     return;
                 }

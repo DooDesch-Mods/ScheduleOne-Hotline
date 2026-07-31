@@ -19,6 +19,8 @@ namespace Hotline.Bridge
             HotlineBridge.RegisterToggle = (panelId, toggleId, label, get, set) => PanelRegistry.RegisterToggle(panelId, toggleId, label, get, set);
             HotlineBridge.RegisterText = (panelId, provider) => PanelRegistry.RegisterText(panelId, provider);
             HotlineBridge.RegisterImage = (panelId, provider) => PanelRegistry.RegisterImage(panelId, provider);
+            HotlineBridge.RegisterSlider = (panelId, sliderId, label, min, max, step, unit, get, set) =>
+                PanelRegistry.RegisterSlider(panelId, sliderId, label, min, max, step, unit, get, set);
             HotlineBridge.BindPanelLog = panelId => PanelRegistry.BindPanelLog(panelId);
             HotlineBridge.Log = (channel, level, message) => LogHub.Write(channel, level, message);
             HotlineBridge.RegisterHotkey = (owner, label, key, run) => HotkeyRegistry.Register(owner, label, (KeyCode)key, run);

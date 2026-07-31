@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using HarmonyLib;
 using MelonLoader;
 using UnityEngine;
@@ -58,6 +59,7 @@ namespace Hotline
                     case "panel": PanelCmd(p); break;
                     case "act": ActCmd(p); break;
                     case "toggle": ToggleCmd(p); break;
+                    case "slider": SliderCmd(p); break;
                     case "log": LogCmd(p); break;
                     case "keys": KeysList(); break;
                     case "intercept": Intercept(p); break;
@@ -77,7 +79,7 @@ namespace Hotline
         {
             Log("commands: hud [on|off|move <x> <y>|font <n>|reset] | "
                 + "panels | panel <id> [on|off|move <x> <y>|size <w> <h>|reset] | "
-                + "act <actionId> | toggle <toggleId> [on|off] | log [<channel>|all] [n] | keys | "
+                + "act <actionId> | toggle <toggleId> [on|off] | slider <sliderId> [value] | log [<channel>|all] [n] | keys | "
                 + "intercept [on|off|status|suppress on|off] | key press <KeyCode> [mod] | key master <KeyCode>");
         }
 
@@ -229,6 +231,35 @@ namespace Hotline
             string id = p[2];
             bool val = BoolArg(p, 3, !PanelRegistry.GetToggle(id));
             Log(PanelRegistry.SetToggle(id, val) ? $"{id} = {val}" : "no toggle '" + id + "'");
+        }
+
+        /// <summary>
+        /// Read or write a slider from the console. A slider is a mouse control, and a mouse control cannot be driven
+        /// by an automated harness - this is the same value reachable by typing, which is what keeps a tuning session
+        /// reproducible and verifiable after the fact.
+        /// </summary>
+        private static void SliderCmd(string[] p)
+        {
+            if (p.Length <= 2) { Log("usage: hotline slider <sliderId> [value] (omit the value to read it)."); return; }
+
+            string id = p[2];
+            SliderItem s = PanelRegistry.GetSlider(id);
+            if (s == null) { Log("no slider '" + id + "'"); return; }
+
+            if (p.Length <= 3)
+            {
+                Log($"{id} = {PanelRegistry.GetSliderValue(id):0.###} {s.Unit} (range {s.Min:0.###}..{s.Max:0.###}, step {s.Step:0.###})".TrimEnd());
+                return;
+            }
+
+            if (!double.TryParse(p[3], NumberStyles.Float, CultureInfo.InvariantCulture, out double v))
+            {
+                Log("not a number: " + p[3]);
+                return;
+            }
+
+            PanelRegistry.SetSlider(id, v);
+            Log($"{id} = {PanelRegistry.GetSliderValue(id):0.###} {s.Unit}".TrimEnd());
         }
 
         private static void LogCmd(string[] p)

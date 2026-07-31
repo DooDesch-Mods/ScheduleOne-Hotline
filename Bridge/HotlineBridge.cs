@@ -20,5 +20,10 @@ namespace Hotline.Bridge
         public static Action<string, int, string> Log;                                         // channel, level(0=info,1=warn,2=error), message
         public static Action<string, string, int, Action> RegisterHotkey;                      // ownerId, label, keyCode(UnityEngine.KeyCode int), run
         public static Action<string, Func<int[]>> RegisterImage;                               // panelId, provider -> {w, h, argb...} or null
+
+        // A continuous value with a draggable track. Signature kept to standard BCL types like the rest of the
+        // contract, which is why it is a flat parameter list rather than a settings object.
+        public static Action<string, string, string, double, double, double, string, Func<double>, Action<double>> RegisterSlider;
+        // panelId, sliderId, label, min, max, step (0 = continuous), unit, get, set
     }
 }

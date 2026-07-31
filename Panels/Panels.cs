@@ -21,6 +21,48 @@ namespace Hotline.Panels
         public Action<bool> Set;
     }
 
+    /// <summary>
+    /// A continuous value a mod exposes in its Hotline panel - the in-game replacement for a debug field you would
+    /// otherwise have to type into a console.
+    ///
+    /// <see cref="Step"/> of 0 means continuous; anything else snaps the value to a multiple of it, which is what
+    /// makes a slider usable for things like "0.05 at a time" without the user having to land on a pixel.
+    /// </summary>
+    internal sealed class SliderItem
+    {
+        public string Id;
+        public string Label;
+        public string Unit;
+        public double Min;
+        public double Max;
+        public double Step;
+        public Func<double> Get;
+        public Action<double> Set;
+
+        /// <summary>Clamp to range and snap to the step - applied on every write, wherever it came from.</summary>
+        public double Quantize(double v)
+        {
+            if (Max > Min)
+            {
+                if (v < Min) v = Min;
+                else if (v > Max) v = Max;
+            }
+            if (Step > 0d) v = Min + Math.Round((v - Min) / Step) * Step;
+            return v;
+        }
+
+        /// <summary>Where the current value sits in the range, 0..1. Used to place the knob.</summary>
+        public float Fraction01()
+        {
+            double span = Max - Min;
+            if (span <= 0d) return 0f;
+            double v = 0d;
+            try { v = Get != null ? Get() : Min; } catch { }
+            double f = (v - Min) / span;
+            return (float)(f < 0d ? 0d : (f > 1d ? 1d : f));
+        }
+    }
+
     /// <summary>One mod's panel: a named, toggleable window that owns free-text readouts, action buttons and toggles.
     /// Numeric data is expressed through <see cref="Texts"/> providers (a mod renders its own values into text), so
     /// the framework stays domain-agnostic - it is a HUD/hotkey hub, not a metrics store.</summary>
@@ -32,6 +74,7 @@ namespace Hotline.Panels
         public readonly List<Func<string>> Texts = new List<Func<string>>(2);
         public readonly List<ActionItem> Actions = new List<ActionItem>(4);
         public readonly List<ToggleItem> Toggles = new List<ToggleItem>(4);
+        public readonly List<SliderItem> Sliders = new List<SliderItem>(4);
         // Image providers return {width, height, argb0, argb1, ...} (ARGB32 per pixel) or null/empty for "nothing
         // to show". Kept as a raw int[] so the shim boundary stays Unity-free; the window manager builds the texture.
         public readonly List<Func<int[]>> Images = new List<Func<int[]>>(1);
@@ -48,6 +91,7 @@ namespace Hotline.Panels
         private static readonly Dictionary<string, PanelModel> _byId = new Dictionary<string, PanelModel>(8);
         private static readonly Dictionary<string, ActionItem> _actions = new Dictionary<string, ActionItem>(16);
         private static readonly Dictionary<string, ToggleItem> _toggles = new Dictionary<string, ToggleItem>(16);
+        private static readonly Dictionary<string, SliderItem> _sliders = new Dictionary<string, SliderItem>(16);
 
         internal static IReadOnlyList<PanelModel> All => _panels;
         internal static int Count => _panels.Count;
@@ -104,6 +148,31 @@ namespace Hotline.Panels
             _toggles[toggleId] = item;
         }
 
+        internal static void RegisterSlider(string panelId, string sliderId, string label,
+                                            double min, double max, double step, string unit,
+                                            Func<double> get, Action<double> set)
+        {
+            if (get == null || set == null || string.IsNullOrEmpty(sliderId)) return;
+            // An inverted or empty range would make the knob meaningless and the fraction maths divide by zero.
+            if (max <= min) return;
+
+            PanelModel p = GetOrCreate(panelId, null);
+            var item = new SliderItem
+            {
+                Id = sliderId,
+                Label = label ?? sliderId,
+                Unit = unit ?? "",
+                Min = min,
+                Max = max,
+                Step = step > 0d ? step : 0d,
+                Get = get,
+                Set = set,
+            };
+            p.Sliders.RemoveAll(s => s.Id == sliderId);
+            p.Sliders.Add(item);
+            _sliders[sliderId] = item;
+        }
+
         internal static void RegisterImage(string panelId, Func<int[]> provider)
         {
             if (provider == null) return;
@@ -134,6 +203,31 @@ namespace Hotline.Panels
                 try { return t.Get != null && t.Get(); } catch { }
             }
             return false;
+        }
+
+        internal static SliderItem GetSlider(string sliderId)
+        {
+            if (string.IsNullOrEmpty(sliderId)) return null;
+            _sliders.TryGetValue(sliderId, out SliderItem s);
+            return s;
+        }
+
+        /// <summary>Write a slider by id (main thread), clamped and snapped. Returns false if no such slider.</summary>
+        internal static bool SetSlider(string sliderId, double value)
+        {
+            SliderItem s = GetSlider(sliderId);
+            if (s == null) return false;
+            try { s.Set?.Invoke(s.Quantize(value)); }
+            catch (Exception e) { Core.Log?.Warning($"[hotline] slider '{sliderId}' threw: {e.Message}"); }
+            return true;
+        }
+
+        /// <summary>Current value of a slider, or 0 when it does not exist or its getter throws.</summary>
+        internal static double GetSliderValue(string sliderId)
+        {
+            SliderItem s = GetSlider(sliderId);
+            if (s?.Get == null) return 0d;
+            try { return s.Get(); } catch { return 0d; }
         }
     }
 }
