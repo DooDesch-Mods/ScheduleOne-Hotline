@@ -3,6 +3,25 @@
 All notable changes to Hotline are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-07-31
+
+### Added
+- Panels can now hold a **slider** (`Panel.Slider`, `Hud.RegisterSlider`) - a value you drag rather than a
+  number you type. The host clamps it to the declared range and snaps it to the step before your setter runs,
+  so a setter never sees a value it did not declare as legal, whichever control wrote it.
+- `hotline slider <sliderId> [value]` reads or writes the same value from the console. A slider is a mouse
+  control and a mouse control cannot be driven by a test harness, so anything reachable only by dragging
+  reaches testers unverified.
+
+### Changed
+- Dragging a slider continues while the cursor is off the track, which is how every slider anywhere behaves.
+
+### Notes
+- Additive and backward-compatible: older mods are unaffected, and a mod that registers a slider is a no-op
+  on an older Hotline.
+- Control ids are slugified from the label and punctuation is dropped, so two labels that differ only in
+  punctuation collide and the second replaces the first. Give each control distinct words.
+
 ## [1.1.0] - 2026-07-08
 
 ### Added
