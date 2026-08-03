@@ -25,5 +25,12 @@ namespace Hotline.Bridge
         // contract, which is why it is a flat parameter list rather than a settings object.
         public static Action<string, string, string, double, double, double, string, Func<double>, Action<double>> RegisterSlider;
         // panelId, sliderId, label, min, max, step (0 = continuous), unit, get, set
+
+        // Showing a panel from code. Until these existed the overlay could only be summoned with the master key,
+        // so a mod could not offer a console command for its own panel - and anything driven by a keypress cannot
+        // be automated or verified without a human at the keyboard.
+        public static Action<bool> ShowOverlay;              // the whole overlay on/off (the master key's effect)
+        public static Action<string, bool> ShowPanel;        // panelId, visible - also raises the overlay when true
+        public static Func<string, bool> IsPanelVisible;     // panelId -> currently shown
     }
 }

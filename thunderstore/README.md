@@ -6,7 +6,7 @@
 > gets a clean, draggable panel - buttons, toggles, readouts, logs. Hotline even auto-catches mods that grab
 > function keys (F1-F12) and turns them into clickable buttons, so two mods stop fighting over the same key.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)

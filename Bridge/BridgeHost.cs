@@ -24,6 +24,10 @@ namespace Hotline.Bridge
             HotlineBridge.BindPanelLog = panelId => PanelRegistry.BindPanelLog(panelId);
             HotlineBridge.Log = (channel, level, message) => LogHub.Write(channel, level, message);
             HotlineBridge.RegisterHotkey = (owner, label, key, run) => HotkeyRegistry.Register(owner, label, (KeyCode)key, run);
+
+            HotlineBridge.ShowOverlay = show => UI.Overlay.Show(show);
+            HotlineBridge.ShowPanel = (panelId, show) => UI.Overlay.ShowPanel(panelId, show);
+            HotlineBridge.IsPanelVisible = panelId => UI.Overlay.IsPanelVisible(panelId);
         }
     }
 }

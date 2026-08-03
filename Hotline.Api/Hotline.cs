@@ -45,6 +45,11 @@ namespace Hotline.Api
         private static Action<string> _bindPanelLog;
         private static Action<string, int, string> _log;
         private static Action<string, string, int, Action> _registerHotkey;
+        // Overlay control (added after the initial ABI; absent on an older host, where these stay null and the
+        // matching public methods are simply no-ops).
+        private static Action<bool> _showOverlay;
+        private static Action<string, bool> _showPanel;
+        private static Func<string, bool> _isPanelVisible;
 
         /// <summary>True only when the Hotline host is installed AND bound. You rarely need this - the API is a safe
         /// no-op when absent.</summary>
@@ -157,6 +162,33 @@ namespace Hotline.Api
             else _pending.Add(() => _registerHotkey?.Invoke(ownerId, label, k, run));
         }
 
+        /// <summary>Raise or dismiss the whole overlay from code - the same thing the master key does. Lets a mod
+        /// offer a console command for its HUD instead of relying on a keypress, which nothing can automate or
+        /// verify. No-op when Hotline is absent or has not bound yet (this one is NOT queued: showing an overlay
+        /// minutes later, once the host finally turns up, would be a surprise rather than a favour).</summary>
+        public static void ShowOverlay(bool show)
+        {
+            EnsureBound();
+            _showOverlay?.Invoke(show);
+        }
+
+        /// <summary>Show or hide one panel by id. Showing it raises the overlay too, so a single call is enough to
+        /// put a mod's panel in front of the player. No-op when Hotline is absent.</summary>
+        public static void ShowPanel(string panelId, bool show)
+        {
+            if (string.IsNullOrEmpty(panelId)) return;
+            EnsureBound();
+            _showPanel?.Invoke(panelId, show);
+        }
+
+        /// <summary>Whether a panel is on screen right now (false when Hotline is absent, or the overlay is down).</summary>
+        public static bool IsPanelVisible(string panelId)
+        {
+            if (string.IsNullOrEmpty(panelId)) return false;
+            EnsureBound();
+            try { return _isPanelVisible != null && _isPanelVisible(panelId); } catch { return false; }
+        }
+
         /// <summary>Discover a convention type named <c>HotlineProbe</c> with a static <c>Register()</c> in THIS mod's
         /// own assembly and invoke it once - so a mod never has to wire a Register() call into its Core. Drive it from
         /// a <c>[ModuleInitializer]</c> in your probe file. No-op + load-order-proof.</summary>
@@ -226,6 +258,9 @@ namespace Hotline.Api
                 _bindPanelLog = Get<Action<string>>(t, "BindPanelLog");
                 _log = Get<Action<string, int, string>>(t, "Log");
                 _registerHotkey = Get<Action<string, string, int, Action>>(t, "RegisterHotkey");
+                _showOverlay = Get<Action<bool>>(t, "ShowOverlay");
+                _showPanel = Get<Action<string, bool>>(t, "ShowPanel");
+                _isPanelVisible = Get<Func<string, bool>>(t, "IsPanelVisible");
 
                 if (_registerPanel == null) return;   // partial table - try again next call
                 _bound = true;

@@ -5,7 +5,7 @@ using Hotline.Config;
 using Hotline.Hotkeys;
 using Hotline.Logging;
 
-[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.2.1", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
+[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.3.0", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace Hotline
@@ -68,13 +68,12 @@ namespace Hotline
                 {
                     if (!Preferences.ShowHud || !UI.WindowLayout.IsVisible("overview"))
                     {
-                        Preferences.SetShowHud(true);
-                        UI.WindowLayout.SetVisible("overview", true);   // persists the layout too
+                        UI.Overlay.Show(true);   // same path the console commands take
                         // if any mod also mapped the master key, reveal its panel so its proxy button is reachable.
                         foreach (string m in Hotline.Hotkeys.Interceptor.ModsForKey(Preferences.MasterKey))
                             UI.WindowLayout.SetVisible(m, true);
                     }
-                    else Preferences.SetShowHud(false);
+                    else UI.Overlay.Show(false);
                 }
 
                 HotkeyRegistry.Poll();   // fire any mod's centrally-bound hotkeys
