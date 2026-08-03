@@ -3,6 +3,16 @@
 All notable changes to Hotline are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-08-04
+
+### Fixed
+
+- The overlay no longer takes the game down when a mod's panel shows an image. Opening it with Snitch
+  installed crashed straight to desktop, because the way the image was drawn does not exist in this
+  build of the game.
+- A panel that fails to draw is skipped instead of killing the whole overlay, and it says so once in
+  the log rather than sixty times a second.
+
 ## [1.2.0] - 2026-07-31
 
 ### Added

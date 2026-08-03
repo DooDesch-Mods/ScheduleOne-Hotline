@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Hotline.UI
 
         // styles + background textures (built once)
         private static bool _stylesReady;
-        private static GUIStyle _bg, _title, _close, _grip, _text, _btn;
+        private static GUIStyle _bg, _title, _close, _grip, _text, _btn, _img;
         private static Texture2D _bgTex, _titleTex, _whiteTex, _gripTex;
 
         // hover state (legacy Input, set once per Draw); hover only matters while the cursor is free
@@ -112,8 +113,22 @@ namespace Hotline.UI
             for (int i = 0; i < _order.Count; i++)
             {
                 string id = _order[i];
-                if (WindowLayout.IsVisible(id)) DrawWindow(id, id == front);
+                if (!WindowLayout.IsVisible(id)) continue;
+                // One panel must never take the overlay - or the game - down with it. OnGUI runs every frame, so an
+                // unguarded throw in here repeats dozens of times a second; that is how a single unsupported draw
+                // call turned into a crash. Isolate per window, report the id once, and keep drawing the rest.
+                try { DrawWindow(id, id == front); }
+                catch (Exception e) { ReportDrawFailure(id, e); }
             }
+        }
+
+        // Panels that threw while drawing, so the log gets one line per panel instead of one per frame.
+        private static readonly HashSet<string> _drawFailed = new HashSet<string>();
+
+        private static void ReportDrawFailure(string id, Exception e)
+        {
+            if (!_drawFailed.Add(id)) return;   // already reported this panel
+            Core.Log?.Error($"panel '{id}' failed to draw and was skipped: {e.Message}");
         }
 
         private static void RefreshWindowList()
@@ -289,7 +304,17 @@ namespace Hotline.UI
             side = Mathf.Min(side, innerW);
             float drawY = localY - scroll;
             if (drawY + side > 0f && drawY < bodyRect.height)
-                GUI.DrawTexture(new Rect(Pad, drawY, side, side), tex, ScaleMode.ScaleToFit, true);
+            {
+                // NOT GUI.DrawTexture: every one of its overloads funnels into the big one, which is stripped
+                // out of the IL2CPP build. Calling it throws "Method unstripping failed" - and because this runs
+                // from OnGUI it throws again on the very next frame, dozens of times a second, until the process
+                // dies. A panel with an image took the whole game down.
+                // GUI.Box survives stripping (it draws every frame, box, button and slider in this overlay), and a
+                // style's background texture is stretched to the rect - so the image renders without ever touching
+                // DrawTexture. The style is reused, so point it at this panel's texture each time.
+                _img.normal.background = tex;
+                GUI.Box(new Rect(Pad, drawY, side, side), GUIContent.none, _img);
+            }
             localY += side + Gap;
         }
 
@@ -579,6 +604,15 @@ namespace Hotline.UI
 
             _text = new GUIStyle(GUI.skin.label) { richText = true, wordWrap = true, alignment = TextAnchor.UpperLeft };
             _text.normal.textColor = new Color(0.84f, 0.87f, 0.93f);
+
+            // Draws a panel's texture and nothing else - no padding, no text slot, no background tint.
+            // This is what replaces GUI.DrawTexture, which is stripped out of the IL2CPP build.
+            _img = new GUIStyle
+            {
+                padding = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(0, 0, 0, 0),
+                border = new RectOffset(0, 0, 0, 0)   // no 9-slice: the texture stretches whole
+            };
 
             // Built from scratch (NOT GUI.skin.box, whose Clip clipping + border crop descenders like g/p/y).
             // White background, tinted per-button via GUI.backgroundColor (normal/hover/on).
