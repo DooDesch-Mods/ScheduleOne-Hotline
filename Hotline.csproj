@@ -48,9 +48,19 @@
   <!-- On CI the build-libs repo is checked out into ./Workspace; this mod references only the Workspace/lib DLLs and
        compiles none of that source, so keep the shared Workspace/ui design-system out of the default compile glob.
        Locally Workspace is a sibling folder, so this Remove is a no-op there. -->
+  <ItemGroup>
+    <Compile Remove="Workspace/**/*.cs" />
+    <!-- The modder shim is its own assembly and lives in this repo only so modders can get it.
+         Compiling it into the host too would give the mod a second copy of the client that binds to itself. -->
+    <Compile Remove="Hotline.Api/**/*.cs" />
+  </ItemGroup>
+
   <!-- hash's shim: one file, no references, no hard dependency. It puts this mod's own console words into the
        game's command list so anything that lists commands can see them. Taken from the hash checkout beside this
-       one when there is one, and from the workspace copy otherwise - CI checks out this repo alone. -->
+       one when there is one, and from the workspace copy otherwise - CI checks out this repo alone.
+
+       It has to come after the Compile Remove above: on CI the workspace repo is checked out INTO this one,
+       so Workspace/**/*.cs matches the shim's own path and a Remove after the Include wins. -->
   <PropertyGroup>
     <HashShimPath Condition="Exists('$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs')">$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs</HashShimPath>
     <HashShimPath Condition="'$(HashShimPath)' == '' And Exists('$(WorkspaceLibPath)/hash-api/HashCommands.cs')">$(WorkspaceLibPath)/hash-api/HashCommands.cs</HashShimPath>
@@ -60,12 +70,6 @@
     <Compile Include="$(HashShimPath)" Link="Hash.Api/HashCommands.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Workspace/**/*.cs" />
-    <!-- The modder shim is its own assembly and lives in this repo only so modders can get it.
-         Compiling it into the host too would give the mod a second copy of the client that binds to itself. -->
-    <Compile Remove="Hotline.Api/**/*.cs" />
-  </ItemGroup>
 
   <!-- Mod loader references -->
   <ItemGroup>
