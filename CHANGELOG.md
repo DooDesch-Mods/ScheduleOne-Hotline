@@ -3,6 +3,20 @@
 All notable changes to Hotline are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.1] - 2026-08-04
+
+### Changed
+
+- `hotline` shows up in the game's command list, so a console autocomplete or a terminal can offer it and
+  complete it. It was answered by a patch and registered nowhere, which made it invisible to every tool that
+  lists commands. Nothing about running it changes.
+
+## [1.3.0] - 2026-08-04
+
+### Added
+
+- A mod can show and hide the overlay from code, without the player pressing the key.
+
 ## [1.2.1] - 2026-08-04
 
 ### Fixed
