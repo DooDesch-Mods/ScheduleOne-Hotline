@@ -48,10 +48,16 @@
   <!-- On CI the build-libs repo is checked out into ./Workspace; this mod references only the Workspace/lib DLLs and
        compiles none of that source, so keep the shared Workspace/ui design-system out of the default compile glob.
        Locally Workspace is a sibling folder, so this Remove is a no-op there. -->
-  <!-- hash's shim: one file, no references, no hard dependency. It puts Hotline's own console word into the
-       game's command list so anything that lists commands can see it. -->
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs" Link="Hash.Api/HashCommands.cs" />
+  <!-- hash's shim: one file, no references, no hard dependency. It puts this mod's own console words into the
+       game's command list so anything that lists commands can see them. Taken from the hash checkout beside this
+       one when there is one, and from the workspace copy otherwise - CI checks out this repo alone. -->
+  <PropertyGroup>
+    <HashShimPath Condition="Exists('$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs')">$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs</HashShimPath>
+    <HashShimPath Condition="'$(HashShimPath)' == '' And Exists('$(WorkspaceLibPath)/hash-api/HashCommands.cs')">$(WorkspaceLibPath)/hash-api/HashCommands.cs</HashShimPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(HashShimPath)' != ''">
+    <Compile Include="$(HashShimPath)" Link="Hash.Api/HashCommands.cs" />
   </ItemGroup>
 
   <ItemGroup>
