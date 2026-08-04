@@ -48,6 +48,12 @@
   <!-- On CI the build-libs repo is checked out into ./Workspace; this mod references only the Workspace/lib DLLs and
        compiles none of that source, so keep the shared Workspace/ui design-system out of the default compile glob.
        Locally Workspace is a sibling folder, so this Remove is a no-op there. -->
+  <!-- hash's shim: one file, no references, no hard dependency. It puts Hotline's own console word into the
+       game's command list so anything that lists commands can see it. -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)../Hash/Hash.Api/HashCommands.cs" Link="Hash.Api/HashCommands.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Workspace/**/*.cs" />
     <!-- The modder shim is its own assembly and lives in this repo only so modders can get it.

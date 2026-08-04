@@ -1,3 +1,4 @@
+using Hash.Api;
 using System;
 using MelonLoader;
 using UnityEngine;
@@ -35,6 +36,10 @@ namespace Hotline
 
             // Publish the modder API bridge as early as possible so other mods' Hotline.Api calls bind.
             Hotline.Bridge.BridgeHost.Install();
+
+            // Nothing registers `hotline` with the game - the prefix below answers it - so no command list, help
+            // overlay or autocomplete can learn the word exists. One call puts it in the game's own list.
+            HashCommands.Add("hotline", "overlay: list, open, close, key", "hotline list");
 
             // The console bridge (Console.SubmitCommand prefixes) is the product's control surface.
             try { HarmonyInstance.PatchAll(); }
