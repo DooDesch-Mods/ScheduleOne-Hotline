@@ -6,7 +6,7 @@ using Hotline.Config;
 using Hotline.Hotkeys;
 using Hotline.Logging;
 
-[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", "1.3.1", "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
+[assembly: MelonInfo(typeof(Hotline.Core), "Hotline", DooDesch.ModVersion.Current, "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-Hotline")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace Hotline
