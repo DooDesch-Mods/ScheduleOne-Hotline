@@ -43,7 +43,7 @@ namespace Hotline
 
             // The console bridge (Console.SubmitCommand prefixes) is the product's control surface.
             try { HarmonyInstance.PatchAll(); }
-            catch (Exception e) { Log.Warning("[Hotline] Harmony patch failed: " + e.Message); }
+            catch (Exception e) { Log.Warning("Harmony patch failed: " + e.Message); }
 
             Log.Msg("Hotline v" + (MelonAssembly?.Assembly?.GetName()?.Version?.ToString(3) ?? "?")
                     + " - mod HUD & hotkey hub. Press " + Preferences.MasterKey + " in-world to open the overlay ('hotline help' for commands).");
