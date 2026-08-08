@@ -2,6 +2,8 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
+📖 **Documentation:** [docs.doodesch.de/mods/hotline/](https://docs.doodesch.de/mods/hotline/)
+
 > Every mod invents its own hotkey and its own debug window. Hotline ends that: one master key (F6) opens a
 > single in-game overlay where every mod gets a clean, draggable panel - buttons, toggles, readouts, logs.
 > It even auto-catches mods that grab function keys (F1-F12) and turns them into clickable buttons, so two
