@@ -15,6 +15,7 @@
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
 ![Status](https://img.shields.io/badge/status-working-brightgreen)
+[![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
 
 ## Features
 
