@@ -16,6 +16,7 @@
 ![Type](https://img.shields.io/badge/type-framework-orange)
 ![Status](https://img.shields.io/badge/status-working-brightgreen)
 [![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
+[![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy/badge.svg)](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy)
 
 ## Features
 
