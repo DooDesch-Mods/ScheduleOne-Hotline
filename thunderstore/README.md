@@ -10,6 +10,7 @@
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
+[![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
 
 [![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy/badge.svg)](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy)
 
