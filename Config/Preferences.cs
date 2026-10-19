@@ -36,7 +36,7 @@ namespace Hotline.Config
                 "Master switch. When OFF, Hotline does nothing at all. When ON, the unified overlay and the central " +
                 "hotkey table are available; the overlay stays hidden until you press the master key.");
             _showHud = Create("ShowHud", false, "Show overlay",
-                "Whether the Hotline overlay is currently visible. Toggle live with the master key (default F7) or " +
+                "Whether the Hotline overlay is currently visible. Toggle live with the master key (default F6) or " +
                 "'hotline hud'. Off by default.");
             _masterKey = Create("MasterHotkey", "F6", "Master overlay key",
                 "The single key that opens/closes the Hotline overlay - the one hotkey that replaces every mod's own. " +
