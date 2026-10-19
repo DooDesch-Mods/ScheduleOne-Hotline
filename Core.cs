@@ -15,7 +15,7 @@ namespace Hotline
     /// MelonLoader entry point for the Hotline framework. It installs the modder API bridge and the console bridge
     /// ("hotline ..."), then each in-world frame drives the one master overlay key, the central hotkey table and the
     /// overlay input. Mods register panels/hotkeys through Hotline.Api; everything stays hidden until you press the
-    /// master key (default F7).
+    /// master key (default F6).
     /// </summary>
     public sealed class Core : MelonMod
     {
