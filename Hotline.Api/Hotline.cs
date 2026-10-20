@@ -28,6 +28,21 @@ namespace Hotline.Api
     ///
     /// All calls MUST be made from the Unity main thread.
     /// </summary>
+    /// <remarks>
+    /// A panel id is any string you pick, usually the mod name, e.g. "MyMod". It is also the panel's log channel and the
+    /// owner of its hotkeys. Each button, toggle and slider gets the id <c>panelId:label-slug</c>: the label in lower case,
+    /// with every run of other characters turned into "-". "Say hi" in the panel "HotlineExample" becomes
+    /// <c>HotlineExample:say-hi</c>. The console commands <c>hotline act</c>, <c>hotline toggle</c> and <c>hotline slider</c>
+    /// take that id. A second control with the same label in the same panel replaces the first.
+    /// </remarks>
+    /// <example>
+    /// A slider, and the panel shown from code:
+    /// <code>
+    /// Hud.RegisterPanel("MyMod", "My Mod")
+    ///    .Slider("Spawn radius", 5, 50, () =&gt; _radius, v =&gt; _radius = v, 1, "m");
+    /// Hud.ShowPanel("MyMod", true);
+    /// </code>
+    /// </example>
     public static class Hud
     {
         // bound bridge delegates (null until the host is found)
@@ -58,6 +73,8 @@ namespace Hotline.Api
         /// <summary>Declare a panel: a named, toggleable, movable window in the Hotline overlay that groups everything
         /// this mod exposes (text readouts, action buttons, toggles, a log channel). Returns a fluent builder.
         /// Load-order-proof; a no-op (the builder still works) if Hotline is absent.</summary>
+        /// <param name="id">Your own panel id, e.g. "MyMod". Null or empty registers nothing, and the returned builder does nothing either.</param>
+        /// <param name="title">The window title, e.g. "My Mod". Null or empty shows the id. The same id again with a title renames the panel.</param>
         public static Panel RegisterPanel(string id, string title = null)
         {
             var panel = new Panel(id);
@@ -71,6 +88,9 @@ namespace Hotline.Api
 
         /// <summary>A clickable button in a mod's panel - the in-game replacement for a debug hotkey action. Runs on
         /// the main thread when clicked. Load-order-proof.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>. An unknown id creates a panel titled with that id; null or empty uses the panel "misc".</param>
+        /// <param name="label">The button text, e.g. "Reload". It also forms the action id, e.g. <c>MyMod:reload</c>. Null or empty registers nothing.</param>
+        /// <param name="run">Runs on each click or <c>hotline act</c> call. An exception is caught and logged as a warning. Null registers nothing.</param>
         public static void RegisterAction(string panelId, string label, Action run)
         {
             if (run == null || string.IsNullOrEmpty(label)) return;
@@ -82,6 +102,10 @@ namespace Hotline.Api
 
         /// <summary>An on/off control in a mod's panel - the in-game replacement for a toggle hotkey. <paramref name="get"/>
         /// reports the current state, <paramref name="set"/> applies it; both run on the main thread. Load-order-proof.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>.</param>
+        /// <param name="label">The control text, e.g. "Verbose". It also forms the toggle id, e.g. <c>MyMod:verbose</c>. Null or empty registers nothing.</param>
+        /// <param name="get">Returns the current state, e.g. <c>() =&gt; _verbose</c>. Null registers nothing.</param>
+        /// <param name="set">Applies the new state, e.g. <c>v =&gt; _verbose = v</c>. Null registers nothing.</param>
         public static void RegisterToggle(string panelId, string label, Func<bool> get, Action<bool> set)
         {
             if (get == null || set == null || string.IsNullOrEmpty(label)) return;
@@ -98,6 +122,14 @@ namespace Hotline.Api
         /// <paramref name="step"/> (0 = continuous), so a setter never sees a value outside its range.
         /// Load-order-proof; a no-op on an older Hotline host that predates slider support.
         /// </summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>.</param>
+        /// <param name="label">The text before the value, e.g. "Spawn radius". It also forms the slider id, e.g. <c>MyMod:spawn-radius</c>. Null or empty registers nothing.</param>
+        /// <param name="min">The lowest value, e.g. 5.</param>
+        /// <param name="max">The highest value, e.g. 50. A value that is not above <paramref name="min"/> registers nothing.</param>
+        /// <param name="get">Returns the current value. Null registers nothing.</param>
+        /// <param name="set">Applies a value that is already clamped and snapped. Null registers nothing.</param>
+        /// <param name="step">The snap size, e.g. 0.05. 0 or less is continuous. It also sets the decimals shown: up to 2 for 0 or a step of 1 and more, 1 from 0.1, 2 from 0.01, 3 below that.</param>
+        /// <param name="unit">Text shown after the value, e.g. "m" or "%". Null or empty shows none.</param>
         public static void RegisterSlider(string panelId, string label, double min, double max,
                                           Func<double> get, Action<double> set, double step = 0d, string unit = null)
         {
@@ -110,6 +142,8 @@ namespace Hotline.Api
         }
 
         /// <summary>A free-text, multi-line readout in a mod's panel. Polled by the host on the main thread. Load-order-proof.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>.</param>
+        /// <param name="provider">Returns the text, e.g. <c>() =&gt; "queue = " + _queue.Count</c>. Each call adds one more readout. Null registers nothing.</param>
         public static void RegisterText(string panelId, Func<string> provider)
         {
             if (provider == null) return;
@@ -122,6 +156,19 @@ namespace Hotline.Api
         /// - ARGB32 pixels, row-major top-down - or null/empty for "nothing to show". Polled by the host on the main
         /// thread and drawn Point-filtered. Kept as a raw int[] so this shim needs no Unity reference. Load-order-proof;
         /// a no-op on an older Hotline host that predates image support.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>.</param>
+        /// <param name="provider">
+        /// Returns <c>{ width, height, pixel0, pixel1, ... }</c> with width times height pixels after the two sizes. Each pixel
+        /// is <c>0xAARRGGBB</c>, so opaque black is <c>unchecked((int)0xFF000000)</c>. A shorter array, or a width or height
+        /// of 0 or less, shows nothing. Null registers nothing.
+        /// </param>
+        /// <example>
+        /// A 2 x 2 checkerboard:
+        /// <code>
+        /// int b = unchecked((int)0xFF000000), w = unchecked((int)0xFFFFFFFF);
+        /// Hud.RegisterImage("MyMod", () =&gt; new[] { 2, 2, b, w, w, b });
+        /// </code>
+        /// </example>
         public static void RegisterImage(string panelId, Func<int[]> provider)
         {
             if (provider == null) return;
@@ -132,6 +179,7 @@ namespace Hotline.Api
 
         /// <summary>Mark that a panel should display its own log channel (the lines you send via <see cref="Log"/> /
         /// <see cref="Panel.Write"/> with the same id). Load-order-proof.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>. The panel shows the log channel of the same name.</param>
         public static void BindPanelLog(string panelId)
         {
             EnsureBound();
@@ -141,6 +189,9 @@ namespace Hotline.Api
 
         /// <summary>Send a log line to a channel (use your mod/panel id as the channel). It appears in that mod's panel
         /// log AND in Hotline's combined timeline. Load-order-proof; a no-op if Hotline is absent.</summary>
+        /// <param name="channel">Your panel id, e.g. "MyMod". Null or empty goes to the channel "misc". A channel keeps its last 400 lines, the combined timeline its last 1200.</param>
+        /// <param name="message">The line to show. Null or empty sends nothing.</param>
+        /// <param name="level">Info, Warning or Error. The default is Info.</param>
         public static void Log(string channel, string message, LogLevel level = LogLevel.Info)
         {
             if (string.IsNullOrEmpty(message)) return;
@@ -153,6 +204,10 @@ namespace Hotline.Api
         /// <summary>Bind a central hotkey to an action. Hotline owns the key polling and conflict detection, so every
         /// mod's hotkeys live in one place. Pass <see cref="HotlineKey.None"/> to skip the key and only label the
         /// action. The same action typically also appears as a panel button. Load-order-proof.</summary>
+        /// <param name="ownerId">Your panel id, e.g. "MyMod". Null or empty uses "misc".</param>
+        /// <param name="label">Names the binding, e.g. "Reload". The same owner and label again replaces the binding. Null or empty registers nothing.</param>
+        /// <param name="key">One of F1 to F12, or <see cref="HotlineKey.None"/>. When two owners bind the same key, both fire and Hotline logs a warning. F6 is Hotline's default master key.</param>
+        /// <param name="run">Runs when the key goes down. An exception is caught and logged as a warning. Null registers nothing.</param>
         public static void RegisterHotkey(string ownerId, string label, HotlineKey key, Action run)
         {
             if (run == null || string.IsNullOrEmpty(label)) return;
@@ -166,6 +221,7 @@ namespace Hotline.Api
         /// offer a console command for its HUD instead of relying on a keypress, which nothing can automate or
         /// verify. No-op when Hotline is absent or has not bound yet (this one is NOT queued: showing an overlay
         /// minutes later, once the host finally turns up, would be a surprise rather than a favour).</summary>
+        /// <param name="show">true raises the overlay, false hides it.</param>
         public static void ShowOverlay(bool show)
         {
             EnsureBound();
@@ -174,6 +230,8 @@ namespace Hotline.Api
 
         /// <summary>Show or hide one panel by id. Showing it raises the overlay too, so a single call is enough to
         /// put a mod's panel in front of the player. No-op when Hotline is absent.</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>, e.g. "MyMod". Null or empty does nothing.</param>
+        /// <param name="show">true shows the panel and raises the overlay, false hides the panel.</param>
         public static void ShowPanel(string panelId, bool show)
         {
             if (string.IsNullOrEmpty(panelId)) return;
@@ -182,6 +240,7 @@ namespace Hotline.Api
         }
 
         /// <summary>Whether a panel is on screen right now (false when Hotline is absent, or the overlay is down).</summary>
+        /// <param name="panelId">The id passed to <see cref="RegisterPanel"/>. Null or empty returns false.</param>
         public static bool IsPanelVisible(string panelId)
         {
             if (string.IsNullOrEmpty(panelId)) return false;
@@ -308,6 +367,12 @@ namespace Hotline.Api
     /// Fluent builder for a mod's Hotline panel (returned by <see cref="Hud.RegisterPanel"/>). Everything is a safe
     /// no-op when the Hotline host is absent.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// Panel panel = Hud.RegisterPanel("MyMod", "My Mod").Log();
+    /// panel.Write("reloaded", LogLevel.Warning);
+    /// </code>
+    /// </example>
     public sealed class Panel
     {
         private readonly string _id;
@@ -320,19 +385,35 @@ namespace Hotline.Api
         public Panel Text(Func<string> provider) { Hud.RegisterText(_id, provider); return this; }
 
         /// <summary>An image in this panel (e.g. a QR code). Provider returns { width, height, argb... } or null.</summary>
+        /// <param name="provider">Returns <c>{ width, height, 0xAARRGGBB pixels... }</c>; see <see cref="Hud.RegisterImage"/>.</param>
         public Panel Image(Func<int[]> provider) { Hud.RegisterImage(_id, provider); return this; }
 
         /// <summary>A clickable button (replaces a debug hotkey action).</summary>
+        /// <param name="label">The button text, e.g. "Reload". It also forms the action id, e.g. <c>MyMod:reload</c>.</param>
+        /// <param name="run">Runs on each click or <c>hotline act</c> call.</param>
         public Panel Action(string label, Action run) { Hud.RegisterAction(_id, label, run); return this; }
 
         /// <summary>An on/off control (replaces a debug toggle hotkey).</summary>
+        /// <param name="label">The control text, e.g. "Verbose". It also forms the toggle id, e.g. <c>MyMod:verbose</c>.</param>
+        /// <param name="get">Returns the current state.</param>
+        /// <param name="set">Applies the new state.</param>
         public Panel Toggle(string label, Func<bool> get, Action<bool> set) { Hud.RegisterToggle(_id, label, get, set); return this; }
 
         /// <summary>A draggable value (replaces typing a number into a console to find it).</summary>
+        /// <param name="label">The text before the value. It also forms the slider id, e.g. <c>MyMod:spawn-radius</c>.</param>
+        /// <param name="min">The lowest value.</param>
+        /// <param name="max">The highest value. It must be above <paramref name="min"/>.</param>
+        /// <param name="get">Returns the current value.</param>
+        /// <param name="set">Applies a value that is already clamped and snapped.</param>
+        /// <param name="step">The snap size, e.g. 0.05. 0 is continuous. See <see cref="Hud.RegisterSlider"/>.</param>
+        /// <param name="unit">Text shown after the value, e.g. "m". Null shows none.</param>
         public Panel Slider(string label, double min, double max, Func<double> get, Action<double> set, double step = 0d, string unit = null)
         { Hud.RegisterSlider(_id, label, min, max, get, set, step, unit); return this; }
 
         /// <summary>Bind a central hotkey to an action owned by this panel.</summary>
+        /// <param name="label">Names the binding, e.g. "Reload". The same label again replaces it.</param>
+        /// <param name="key">One of F1 to F12, or <see cref="HotlineKey.None"/> for a label without a key.</param>
+        /// <param name="run">Runs when the key goes down.</param>
         public Panel Hotkey(string label, HotlineKey key, Action run) { Hud.RegisterHotkey(_id, label, key, run); return this; }
 
         /// <summary>Show this panel's own log channel inside the panel.</summary>
