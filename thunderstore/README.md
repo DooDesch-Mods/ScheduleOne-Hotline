@@ -46,4 +46,4 @@ to open its window; drag by the title bar, resize from the corner. `hotline help
 
 ## License
 
-MIT. See the included LICENSE.md.
+DooDesch API License - build on the API, do not copy the code. See [LICENSE.md](https://github.com/DooDesch-Mods/ScheduleOne-Hotline/blob/main/LICENSE.md).
