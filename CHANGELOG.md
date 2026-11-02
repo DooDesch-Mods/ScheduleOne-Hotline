@@ -3,6 +3,22 @@
 All notable changes to Hotline are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] - 2026-11-02
+
+### Fixed
+
+- The "Show overlay" setting names F6 as the default key.
+- Log lines no longer repeat the mod's own name.
+
+### Changed
+
+- License: DooDesch API License. Build on the API, copy only the API files; earlier releases stay MIT.
+- Decompiling is not permitted, except for the package review by Thunderstore and Nexus Mods. The source is on GitHub.
+
+### For mod authors
+
+- The [API reference](https://docs.doodesch.de/mods/hotline/api/) lists allowed values, units and an example for each call.
+
 ## [1.3.1] - 2026-08-04
 
 ### Changed
