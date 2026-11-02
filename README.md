@@ -17,7 +17,7 @@
 ![Status](https://img.shields.io/badge/status-working-brightgreen)
 [![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
 
-[![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy/badge.svg)](https://mlvscan.com/attestations/att_TaVC5l68KpwvURvfqGIqpOVy)
+[![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R/badge.svg)](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R)
 
 ## Features
 
