@@ -2,6 +2,8 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
+**Download:** [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2239) · [Thunderstore](https://thunderstore.io/c/schedule-i/p/DooDesch/Hotline/) · [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-Hotline/releases)
+
 📖 **Documentation:** [docs.doodesch.de/mods/hotline/](https://docs.doodesch.de/mods/hotline/)
 
 > Every mod invents its own hotkey and its own debug window. Hotline ends that: one master key (F6) opens a
@@ -49,10 +51,16 @@ without it too.
 
 ## Installation
 
-### Recommended: a Thunderstore mod manager
+### Recommended: Nexus Mods
+
+1. Install **MelonLoader 0.7.3** for Schedule I ([melonwiki.xyz](https://melonwiki.xyz/)).
+2. Download Hotline from [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2239) and install it with Vortex,
+   or put **`Hotline.dll`** into your Schedule I `Mods/` folder.
+
+### Thunderstore mod manager
 
 Install with a mod manager (r2modman / Gale) from the Schedule I community; MelonLoader is pulled in
-automatically.
+automatically. The [Thunderstore page](https://thunderstore.io/c/schedule-i/p/DooDesch/Hotline/) has the package.
 
 ### Manual
 
