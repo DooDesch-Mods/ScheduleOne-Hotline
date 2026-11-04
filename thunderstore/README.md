@@ -2,6 +2,8 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
+
 > **One overlay and one key for every mod's HUD.** Press F6 to open a single in-game overlay where every mod
 > gets a clean, draggable panel - buttons, toggles, readouts, logs. Hotline even auto-catches mods that grab
 > function keys (F1-F12) and turns them into clickable buttons, so two mods stop fighting over the same key.
@@ -43,6 +45,12 @@ to open its window; drag by the title bar, resize from the corner. `hotline help
 `Enabled`, `MasterHotkey` (F6), `InterceptFunctionKeys` (on), `SuppressRawFunctionKeys` (off, full takeover),
 `HudFontSize` (12). Editable in `UserData/MelonPreferences.cfg` under
 `Hotline_01_Main`.
+
+## Community
+
+[![DooDesch Mods on Discord](https://mods.doodesch.de/img/card.svg)](https://mods.doodesch.de)
+
+Join the DooDesch Mods Discord: update pings, polls on what comes next, and playtests of new mods.
 
 ## License
 

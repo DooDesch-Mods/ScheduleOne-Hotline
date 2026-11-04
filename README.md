@@ -4,6 +4,8 @@
 
 **Download:** [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2239) · [Thunderstore](https://thunderstore.io/c/schedule-i/p/DooDesch/Hotline/) · [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-Hotline/releases)
 
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
+
 📖 **Documentation:** [docs.doodesch.de/mods/hotline/](https://docs.doodesch.de/mods/hotline/)
 
 > Every mod invents its own hotkey and its own debug window. Hotline ends that: one master key (F6) opens a
@@ -122,6 +124,12 @@ you can ship it with no hard dependency.
   use the new Input System are not intercepted (they are simply not affected).
 - Vanilla input is never touched - the game reads gameplay through its own input system, and interception is
   scoped to mod code.
+
+## Community
+
+[![DooDesch Mods on Discord](https://mods.doodesch.de/img/card.svg)](https://mods.doodesch.de)
+
+Join the DooDesch Mods Discord: update pings, polls on what comes next, and playtests of new mods.
 
 ## Credits
 
