@@ -2,8 +2,6 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/hotline](https://support.doodesch.de/hotline).
 
-[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
-
 > **One overlay and one key for every mod's HUD.** Press F6 to open a single in-game overlay where every mod
 > gets a clean, draggable panel - buttons, toggles, readouts, logs. Hotline even auto-catches mods that grab
 > function keys (F1-F12) and turns them into clickable buttons, so two mods stop fighting over the same key.
@@ -12,7 +10,7 @@
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
-[![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de) [![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
 
 [![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R/badge.svg)](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R)
 

@@ -4,8 +4,6 @@
 
 **Download:** [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2239) · [Thunderstore](https://thunderstore.io/c/schedule-i/p/DooDesch/Hotline/) · [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-Hotline/releases)
 
-[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
-
 📖 **Documentation:** [docs.doodesch.de/mods/hotline/](https://docs.doodesch.de/mods/hotline/)
 
 > Every mod invents its own hotkey and its own debug window. Hotline ends that: one master key (F6) opens a
@@ -19,7 +17,7 @@
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![Type](https://img.shields.io/badge/type-framework-orange)
 ![Status](https://img.shields.io/badge/status-working-brightgreen)
-[![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de) [![Polyfill](https://polyfill.doomods.com/badge/hotline.svg)](https://polyfill.doomods.com/mod/hotline)
 
 [![MLVScan Hotline.dll](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R/badge.svg)](https://mlvscan.com/attestations/att_gmW91_YyIl29LnkClMGiCc3R)
 
